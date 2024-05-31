@@ -14,7 +14,15 @@
             "cwd": "${fileDirname}",
             "environment": [],
             "console": "externalTerminal"
-        }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "(linux) Launch",
+            "program": "${workspaceFolder}/zig-out/bin/zigeditor-xlinux",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
 
     ]
 }

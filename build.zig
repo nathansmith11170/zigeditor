@@ -1,35 +1,42 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
+    const target = b.standardTargetOptions(.{});
 
-    const exe = b.addExecutable(.{
+    const winexe = b.addExecutable(.{
         .name = "zigeditor-windows",
-        .root_source_file = .{ .path = "src/win-zigeditor.zig" },
-        .target = b.standardTargetOptions(.{
-            .default_target = .{
-                .os_tag = .windows,
-                .abi = .msvc,
-                .cpu_arch = .x86_64,
-                .ofmt = .coff,
+        .root_source_file = .{
+            .src_path = .{
+                .owner = b,
+                .sub_path = "src/win-zigeditor.zig",
             },
-        }),
+        },
+        .target = target,
         .optimize = optimize,
     });
-    exe.subsystem = .Windows;
-    exe.linkSystemLibrary("user32");
-    exe.linkSystemLibrary("gdi32");
+    winexe.subsystem = .Windows;
+    winexe.linkSystemLibrary("user32");
+    winexe.linkSystemLibrary("gdi32");
 
-    b.installArtifact(exe);
+    const xorgexe = b.addExecutable(.{
+        .name = "zigeditor-xlinux",
+        .root_source_file = .{
+            .src_path = .{
+                .owner = b,
+                .sub_path = "src/linux-zigeditor.zig",
+            },
+        },
+        .target = target,
+        .optimize = optimize,
+    });
 
-    const run_cmd = b.addRunArtifact(exe);
+    const windows_exe = b.addInstallArtifact(winexe, .{});
+    const windows_step = b.step("windows", "Build the windows application");
+    windows_step.dependOn(&windows_exe.step);
 
-    run_cmd.step.dependOn(b.getInstallStep());
-
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    }
-
-    const run_step = b.step("run", "Run the app");
-    run_step.dependOn(&run_cmd.step);
+    const linux_exe = b.addInstallArtifact(xorgexe, .{});
+    const linux_step = b.step("linux", "Build the linux application");
+    linux_step.dependOn(&linux_exe.step);
 }
