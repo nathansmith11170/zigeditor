@@ -5,38 +5,19 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
     const target = b.standardTargetOptions(.{});
 
-    const winexe = b.addExecutable(.{
-        .name = "zigeditor-windows",
+    const exe = b.addExecutable(.{
+        .name = "zigeditor",
         .root_source_file = .{
             .src_path = .{
                 .owner = b,
-                .sub_path = "src/win-zigeditor.zig",
+                .sub_path = "src/zigeditor.zig",
             },
         },
         .target = target,
         .optimize = optimize,
     });
-    winexe.subsystem = .Windows;
-    winexe.linkSystemLibrary("user32");
-    winexe.linkSystemLibrary("gdi32");
+    exe.linkSystemLibrary2("glfw", .{ .preferred_link_mode = .dynamic });
+    exe.linkSystemLibrary2("freetype", .{ .preferred_link_mode = .dynamic });
 
-    const xorgexe = b.addExecutable(.{
-        .name = "zigeditor-xlinux",
-        .root_source_file = .{
-            .src_path = .{
-                .owner = b,
-                .sub_path = "src/linux-zigeditor.zig",
-            },
-        },
-        .target = target,
-        .optimize = optimize,
-    });
-
-    const windows_exe = b.addInstallArtifact(winexe, .{});
-    const windows_step = b.step("windows", "Build the windows application");
-    windows_step.dependOn(&windows_exe.step);
-
-    const linux_exe = b.addInstallArtifact(xorgexe, .{});
-    const linux_step = b.step("linux", "Build the linux application");
-    linux_step.dependOn(&linux_exe.step);
+    b.installArtifact(exe);
 }
