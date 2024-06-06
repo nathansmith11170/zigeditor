@@ -16,8 +16,21 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    exe.linkSystemLibrary2("glfw", .{ .preferred_link_mode = .dynamic });
-    exe.linkSystemLibrary2("freetype", .{ .preferred_link_mode = .dynamic });
+
+    // Use mach-glfw
+    const glfw_dep = b.dependency("mach_glfw", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.root_module.addImport("mach-glfw", glfw_dep.module("mach-glfw"));
+
+    // Use mach-freetype
+    const mach_freetype_dep = b.dependency("mach_freetype", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.root_module.addImport("mach-freetype", mach_freetype_dep.module("mach-freetype"));
+    exe.root_module.addImport("mach-harfbuzz", mach_freetype_dep.module("mach-harfbuzz"));
 
     b.installArtifact(exe);
 }

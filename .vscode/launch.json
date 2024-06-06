@@ -5,13 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "gdb",
+            "request": "launch",
+            "name": "Launch Program (windows)",
+            "target": "${workspaceFolder}/zig-out/bin/zigeditor.exe",
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "parseText"
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "Launch",
             "program": "${workspaceFolder}/zig-out/bin/zigeditor",
             "args": [],
             "cwd": "${workspaceFolder}"
-        },
-
+        }
     ]
 }

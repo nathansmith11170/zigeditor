@@ -1,5 +1,7 @@
 const std = @import("std");
-const glfw = @import("bindings/glfw.zig");
+const glfw = @import("mach-glfw");
+const freetype = @import("mach-freetype");
+const harfbuzz = @import("mach-harfbuzz");
 
 /// Default GLFW error handling callback
 fn errorCallback(error_code: glfw.ErrorCode, description: [:0]const u8) void {
@@ -8,7 +10,7 @@ fn errorCallback(error_code: glfw.ErrorCode, description: [:0]const u8) void {
 
 pub fn main() !void {
     glfw.setErrorCallback(errorCallback);
-    if (!glfw.init()) {
+    if (!glfw.init(.{})) {
         std.log.err("failed to initialize GLFW: {?s}", .{glfw.getErrorString()});
         std.process.exit(1);
     }
